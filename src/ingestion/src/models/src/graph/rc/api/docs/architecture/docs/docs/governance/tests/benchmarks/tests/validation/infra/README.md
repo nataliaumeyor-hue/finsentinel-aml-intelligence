@@ -1,3 +1,7 @@
+# FINSENTINEL™ — AI-Powered Financial Intelligence Platform
+
+> **Predictive, intelligence-led financial crime detection across dark web,
+> blockchain, and regulated financial system data — in real time.**
 ---
 
 ## Alignment with U.S. Federal Priorities
