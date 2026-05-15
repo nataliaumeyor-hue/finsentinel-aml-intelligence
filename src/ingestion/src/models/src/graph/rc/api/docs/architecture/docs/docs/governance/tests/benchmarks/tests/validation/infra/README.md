@@ -1,147 +1,79 @@
-# infra — Infrastructure & Security Architecture
-
-**Cloud Platform:** AWS GovCloud / Azure Government  
-**Security Standard:** FedRAMP Moderate Aligned  
-**Status:** Pre-commercial development  
-**Last Updated:** 2026
-
 ---
 
-## 1. Overview
+## Alignment with U.S. Federal Priorities
 
-This directory contains the infrastructure-as-code (IaC) configurations
-for the FINSENTINEL™ platform deployment. All infrastructure is designed
-for government-grade security and compliance from inception, targeting
-FedRAMP Moderate authorization to enable procurement by U.S. federal
-agencies including FinCEN, DHS, FBI, and OFAC.
-
----
-
-## 2. Cloud Architecture
-
-### Primary: AWS GovCloud
-- **Regions:** us-gov-east-1 (primary); us-gov-west-1 (failover)
-- **Account type:** AWS GovCloud (US) — U.S. persons only access
-- **Services:** EKS (container orchestration); RDS (relational data);
-  Neptune (graph database); MSK (Kafka streaming); S3 GovCloud (storage);
-  KMS (key management); CloudTrail (audit logging)
-
-### Secondary: Azure Government
-- **Regions:** USGov Virginia (primary); USGov Texas (failover)
-- **Services:** AKS (container orchestration); Cosmos DB; Event Hubs;
-  Azure Sentinel (SIEM); Key Vault; Azure Monitor
-
-### Multi-Region Design
-AWS GovCloud (Primary)          Azure Government (Secondary)
-us-gov-east-1                   USGov Virginia
-│                               │
-└──────── Active-Active ────────┘
-Load Balancing
-│
-Global Load Balancer
-│
-Client API Gateway
----
-
-## 3. Security Controls
-
-### Encryption
-| Layer | Standard | Implementation |
-|---|---|---|
-| Data at rest | AES-256 | AWS KMS / Azure Key Vault managed keys |
-| Data in transit | TLS 1.3 | Enforced across all service communication |
-| Key rotation | 90-day | Automated via KMS key rotation policy |
-| Database encryption | AES-256 | Transparent data encryption enabled |
-
-### Access Control
-| Control | Implementation |
+| Policy / Mandate | FINSENTINEL™ Alignment |
 |---|---|
-| Authentication | OAuth 2.0 + JWT; MFA enforced for all access |
-| Authorisation | Role-Based Access Control (RBAC); least privilege |
-| Network | Zero-Trust architecture; no implicit trust between services |
-| Privileged access | Just-in-time (JIT) access; no standing privileged sessions |
-| Service accounts | Separate service accounts per microservice; scoped permissions |
+| **AMLA 2020, Section 6206** | AI/ML-led AML modernisation — core platform design |
+| **U.S. Treasury NML Risk Assessment 2024** | Dark web and digital asset monitoring — Layers 1–2 |
+| **FinCEN AML/CFT Priorities 2024** | Cybercrime and ransomware financing detection |
+| **National Cybersecurity Strategy 2023** | Financial system resilience; 99.9% uptime SLA |
+| **FATF Mutual Evaluation U.S. 2024** | Beneficial ownership transparency — entity resolution engine |
+| **Executive Order 14110 on AI Safety** | Responsible AI; NIST AI RMF alignment; human oversight |
+| **FedRAMP Moderate** | AWS GovCloud / Azure Government architecture |
 
-### Network Security
-| Control | Implementation |
+---
+
+## Technology Stack
+
+| Category | Technologies |
 |---|---|
-| Perimeter | Web Application Firewall (WAF); DDoS protection |
-| Segmentation | VPC with private subnets; no public internet exposure for data services |
-| Monitoring | Network flow logs; anomaly detection on traffic patterns |
-| Ingress | API Gateway with rate limiting and IP allowlisting for government clients |
+| ML / AI | Python 3.10+; scikit-learn; PyTorch; HuggingFace Transformers |
+| Graph Analytics | Neo4j; NetworkX; PyTorch Geometric |
+| Blockchain | Web3.py; custom UTXO analysis |
+| API Layer | FastAPI; Strawberry GraphQL; Node.js |
+| Streaming | Apache Kafka; Redis Streams |
+| Infrastructure | AWS GovCloud; Azure Government; Terraform |
+| Security | AES-256; TLS 1.3; RBAC; Zero-Trust; HashiCorp Vault |
 
 ---
 
-## 4. FedRAMP Moderate Control Mapping
+## AI Governance
 
-| NIST SP 800-53 Control Family | Implementation Status |
+FINSENTINEL™ is designed in full alignment with the
+**NIST AI Risk Management Framework (AI RMF 1.0)**:
+
+- **GOVERN:** AI use policy; accountability structure; legal review
+- **MAP:** Use case scoping; risk identification; impact assessment
+- **MEASURE:** Weekly benchmarking; bias testing; drift detection
+- **MANAGE:** Incident response; model versioning; decommissioning criteria
+
+Full system card: [`docs/system-card.md`](docs/system-card.md)  
+AI use policy: [`docs/governance/ai-use-policy.md`](docs/governance/ai-use-policy.md)
+
+**Human oversight commitment:** No automated enforcement action.
+All SAR filings require human review and approval before submission.
+
+---
+
+## National-Scale Impact Projections
+
+| Impact Metric | Projection |
 |---|---|
-| AC — Access Control | Designed: RBAC; MFA; JIT access |
-| AU — Audit & Accountability | Designed: CloudTrail; 7-year retention |
-| CA — Assessment & Authorization | Planned: Third-party assessment pre-launch |
-| CM — Configuration Management | Designed: Terraform IaC; version-controlled configs |
-| CP — Contingency Planning | Designed: Multi-region active-active; RTO < 4 hours |
-| IA — Identification & Authentication | Designed: OAuth 2.0; MFA; service account isolation |
-| IR — Incident Response | Designed: Automated detection; 4-hour containment SLA |
-| RA — Risk Assessment | Designed: Quarterly security reviews |
-| SC — System & Communications Protection | Designed: TLS 1.3; VPC isolation; WAF |
-| SI — System & Information Integrity | Designed: SIEM; automated vulnerability scanning |
+| Financial crime losses addressable | $12.5B+ annually (FBI IC3 2023) |
+| False positive alerts eliminated | 40M+ manual reviews/year at national scale |
+| Compliance cost savings | $2.3B–$4.7B estimated annually across U.S. institutions |
+| U.S. high-skill jobs created | 200–400 over five years |
+| U.S. tax contribution (5-year) | $15M–$30M cumulative |
+| Institutions addressable | 4,900+ FDIC-insured financial institutions |
 
 ---
 
-## 5. Data Sovereignty & Residency
+## License
 
-| Data Type | Residency Requirement | Implementation |
-|---|---|---|
-| PII (U.S. persons) | U.S. only | AWS GovCloud / Azure Government U.S. regions only |
-| Financial transaction data | U.S. only | No cross-border transfer; U.S. region lock enforced |
-| Dark web intelligence | U.S. only | Processing and storage in U.S. GovCloud regions |
-| Blockchain analytics | U.S. only | On-chain public data processed in U.S. regions |
-| Audit logs | U.S. only | CloudTrail logs stored in U.S. GovCloud S3 only |
+Copyright 2026 FINSENTINEL™ / Natalia Umeyor.
 
-All data residency controls enforced via AWS GovCloud and Azure Government
-region restrictions. Compliant with CLOUD Act requirements for U.S.
-government data access.
+Architecture documentation licensed under
+[Apache 2.0](LICENSE).
+
+Core ML algorithm modules are proprietary and maintained under
+trade secret protection.
 
 ---
 
-## 6. Monitoring & Observability
+## Contact
 
-| Tool | Purpose | Retention |
-|---|---|---|
-| AWS CloudTrail | Full API and data access audit log | 7 years (BSA requirement) |
-| Azure Sentinel | SIEM; threat detection; incident response | 1 year hot; 7 years cold |
-| Prometheus | Infrastructure and application metrics | 90 days |
-| Grafana | Real-time dashboards; alerting | — |
-| PagerDuty | Incident alerting and on-call management | — |
-
-### Key Monitoring Targets
-- API response times and error rates
-- Model inference latency (P50, P95, P99)
-- Data pipeline throughput and lag
-- Security event detection and alerting
-- Cost and resource utilisation
-
----
-
-## 7. Disaster Recovery
-
-| Metric | Target |
-|---|---|
-| Recovery Time Objective (RTO) | < 4 hours |
-| Recovery Point Objective (RPO) | < 15 minutes |
-| Backup frequency | Continuous replication to secondary region |
-| Failover type | Automated active-active; no manual intervention required |
-| DR testing | Quarterly failover tests planned |
-
----
-
-## 8. Compliance & Certification Roadmap
-
-| Milestone | Target Timeline |
-|---|---|
-| FedRAMP Moderate — 3PAO assessment initiated | Pre-Series A |
-| SOC 2 Type I | Year 1 post-launch |
-| FedRAMP Moderate — Authorization to Operate (ATO) | Year 2 post-launch |
-| SOC 2 Type II | Year 2 post-launch |
-| StateRAMP (for state agency clients) | Year 3 post-launch |
+**Founder:** Natalia Umeyor  
+**Repository:** github.com/nataliaumeyor-hue/finsentinel-aml-intelligence  
+**Issues:** Please use GitHub Issues for questions, bug reports,
+or responsible disclosure of concerns regarding model behaviour or safety.
